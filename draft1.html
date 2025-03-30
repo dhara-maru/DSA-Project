@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Editor with Undo (Manual Stack)</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 600px;
+            margin-top: 50px;
+        }
+        .document-box {
+            min-height: 50px;
+            padding: 10px;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2 class="text-center">Text Editor with Undo (Stack)</h2>
+    
+    <div class="input-group mb-3">
+        <input type="text" id="wordInput" class="form-control" placeholder="Type a word">
+        <button class="btn btn-primary" onclick="addWord()">Add</button>
+        <button class="btn btn-warning" onclick="undo()">Undo</button>
+    </div>
+    
+    <h5>Document:</h5>
+    <div id="document" class="document-box"></div>
+</div>
+
+<script>
+    class Stack {
+        constructor() {
+            this.items = {};  
+            this.top = -1;    
+        }
+
+        push(word) {
+            if (this.top >= 0 && word.startsWith(" ")) {
+                this.items[this.top] += " "; 
+                word = word.trim(); 
+            }
+            this.top++;           
+            this.items[this.top] = word; 
+        }
+
+        pop() {
+            if (this.top < 0) {
+                return null; 
+            }
+            let removedWord = this.items[this.top];
+            delete this.items[this.top]; 
+            this.top--; 
+            return removedWord;
+        }
+
+        display() {
+            let text = "";
+            for (let i = 0; i <= this.top; i++) {
+                text += this.items[i];
+                if (i < this.top) text += " "; 
+            }
+            return text;
+        }
+    }
+
+    let stack = new Stack();
+
+    function addWord() {
+        let input = document.getElementById("wordInput");
+        let word = input.value;
+
+        if (word !== "") {
+            stack.push(word); 
+            input.value = "";
+            displayDocument();
+        }
+    }
+
+    function undo() {
+        let removed = stack.pop(); 
+        if (removed === null) {
+            alert("No words to undo!");
+        } else {
+            displayDocument();
+        }
+    }
+
+    function displayDocument() {
+        document.getElementById("document").innerText = stack.display();
+    }
+</script>
+
+</body>
+</html>
